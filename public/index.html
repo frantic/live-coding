@@ -43,27 +43,34 @@
   <script>
     var socket = io(document.location.href);
     var snapshots = [];
+    var current = 0;
 
     socket.on('init', function(initialHistory) {
       snapshots = initialHistory;
+      current = snapshots.length - 1;
       update();
     });
     socket.on('change', function(snapshot) {
+      if (current === snapshots.length - 1) {
+        current += 1;
+      }
       snapshots.push(snapshot);
       update();
     });
 
     function update() {
-      var code = snapshots[snapshots.length - 1].content;
+      document.title = current + 1 + '/' + snapshots.length;
+      var code = snapshots[current].content;
       main.innerHTML = hljs.highlight('javascript', code).value;
 
-      if (snapshots.length <= 1) {
+      if (snapshots.length <= 1 || current === 0) {
+        changes.innerHTML = '';
         return;
       }
 
       var diff = JsDiff.diffLines(
-        snapshots[snapshots.length - 2].content,
-        snapshots[snapshots.length - 1].content
+        snapshots[current - 1].content,
+        snapshots[current].content
       );
 
       changes.innerHTML = diff.map(function(part) {
@@ -73,11 +80,24 @@
 
         var placeholder = new Array(part.count + 1).join('&nbsp;\n');
         if (part.added) {
-          return '<span class="hl">' + placeholder + '</span>';
+          return '<span class="hl">' + placeholder + '</span>\n';
         }
 
         return placeholder;
       }).join('');
+    }
+
+    document.onkeydown = function(e) {
+      if (e.keyCode === 39 /* Right */) {
+        current += 1;
+      } else if (e.keyCode === 37 /* Left */) {
+        current -= 1;
+      } else {
+        return;
+      }
+      current = Math.min(current, snapshots.length - 1);
+      current = Math.max(current, 0);
+      update();
     }
   </script>
 </body>
