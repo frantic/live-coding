@@ -35,5 +35,10 @@ fs.watch(fileName, function() {
 
 console.log('Serving ' + fileName + ' on http://localhost:3000/');
 
+var ngrok = require('ngrok');
+ngrok.connect(3000, function (err, url) {
+  console.log('Public URL:', url);
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 server.listen(3000);
