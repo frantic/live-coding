@@ -23,18 +23,18 @@ function getSnapshot() {
   };
 }
 
-var history = [getSnapshot()];
+var snapshots = [getSnapshot()];
 
 io.on('connection', function (socket) {
-  socket.emit('init', history);
+  socket.emit('init', snapshots);
 });
 
 fs.watch(__filename, function() {
-  var last = history[history.length - 1];
+  var last = snapshots[snapshots.length - 1];
   var current = getSnapshot();
   if (current.content !== last.content) {
     io.emit('change', current);
-    history.push(current);
+    snapshots.push(current);
   }
 })
 

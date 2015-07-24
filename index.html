@@ -4,27 +4,38 @@
   <title>Hello world</title>
   <style type="text/css">
     body {
-      background-color: #222;
+      /*background-color: #222;*/
       color: white;
     }
-    pre {
+    pre code {
       font-family: Menlo, Consolas, monospace;
     }
   </style>
   <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/solarized_dark.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
 </head>
-<body>
-  <pre id="main"></pre>
+<body class="hljs">
+  <pre><code id="main"></code></pre>
 
   <script>
     var socket = io(document.location.href);
+    var snapshots = [];
     var main = document.getElementById('main');
-    socket.on('init', function(data) {
-      main.innerHTML = data[data.length - 1].content;
+    socket.on('init', function(initialHistory) {
+      snapshots = initialHistory;
+      update();
     });
-    socket.on('change', function(data) {
-      main.innerHTML = data.content;
+    socket.on('change', function(snapshot) {
+      snapshots.push(snapshot);
+      update();
     });
+
+    function update() {
+      console.log(snapshots);
+      var code = snapshots[snapshots.length - 1].content;
+      main.innerHTML = hljs.highlight('javascript', code).value;
+    }
   </script>
 </body>
 </html>
