@@ -2,16 +2,29 @@
 <html>
 <head>
   <title>Hello world</title>
+  <style type="text/css">
+    body {
+      background-color: #222;
+      color: white;
+    }
+    pre {
+      font-family: Menlo, Consolas, monospace;
+    }
+  </style>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    var socket = io(document.location.href);
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
-  </script>
 </head>
 <body>
+  <pre id="main"></pre>
 
+  <script>
+    var socket = io(document.location.href);
+    var main = document.getElementById('main');
+    socket.on('init', function(data) {
+      main.innerHTML = data[data.length - 1].content;
+    });
+    socket.on('change', function(data) {
+      main.innerHTML = data.content;
+    });
+  </script>
 </body>
 </html>

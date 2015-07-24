@@ -14,12 +14,29 @@ function handleRequest(req, res) {
   });
 }
 
+var fileName = __filename;
+
+function getSnapshot() {
+  return {
+    content: fs.readFileSync(fileName, 'utf8'),
+    modifiedAt: fs.statSync(fileName).mtime.getTime(),
+  };
+}
+
+var history = [getSnapshot()];
+
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+  socket.emit('init', history);
 });
+
+fs.watch(__filename, function() {
+  var last = history[history.length - 1];
+  var current = getSnapshot();
+  if (current.content !== last.content) {
+    io.emit('change', current);
+    history.push(current);
+  }
+})
 
 console.log('Listening http://localhost:3000/');
 server.listen(3000);
