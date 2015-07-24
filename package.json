@@ -9,6 +9,7 @@
   "author": "Alex Kotliarskyi <alex.frantic@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.13.1",
     "socket.io": "^1.3.6"
   }
 }

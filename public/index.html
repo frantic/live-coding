@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello world</title>
+  <style type="text/css">
+    body {
+      color: white;
+    }
+    pre {
+      position: relative;
+    }
+    #changes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    pre code {
+      font-family: Menlo, Consolas, monospace;
+    }
+    .hl {
+      display: inline-block;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/solarized_dark.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+  <script src="./diff.js"></script>
+</head>
+<body class="hljs">
+  <pre><code id="main"></code><code id="changes"></code></pre>
+
+  <script>
+    var socket = io(document.location.href);
+    var snapshots = [];
+    // var main = document.getElementById('main');
+    // var changes = document.getElementById('changes');
+    socket.on('init', function(initialHistory) {
+      snapshots = initialHistory;
+      update();
+    });
+    socket.on('change', function(snapshot) {
+      snapshots.push(snapshot);
+      update();
+    });
+
+    function update() {
+      var code = snapshots[snapshots.length - 1].content;
+      main.innerHTML = hljs.highlight('javascript', code).value;
+
+      if (snapshots.length <= 1) {
+        return;
+      }
+
+      var diff = JsDiff.diffLines(
+        snapshots[snapshots.length - 2].content,
+        snapshots[snapshots.length - 1].content
+      );
+
+      changes.innerHTML = diff.map(function(part) {
+        if (part.removed) {
+          return '';
+        }
+
+        var placeholder = '\n'.repeat(part.count);
+        if (part.added) {
+          return '<span class="hl">' + placeholder + '</span>';
+        }
+
+        return placeholder;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
