@@ -5,23 +5,11 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-
-function handleRequest(req, res) {
-  fs.readFile(path.join(__dirname, 'index.html'), function(err, page) {
-    if (err) {
-      throw err; //1
-    }
-
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end(page);
-  });
-  // x
+var fileName = process.argv[2];
+if (!fileName) {
+  console.error('Usage ' + __filename + ' <file-to-watch>');
+  process.exit(1);
 }
-
-var fileName = 'public/index.html';
 
 function getSnapshot() {
   return {
@@ -45,5 +33,7 @@ fs.watch(fileName, function() {
   }
 })
 
-console.log('Listening http://localhost:3000/');
+console.log('Serving ' + fileName + ' on http://localhost:3000/');
+
+app.use(express.static(path.join(__dirname, 'public')));
 server.listen(3000);
