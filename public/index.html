@@ -37,7 +37,7 @@
     }
   </style>
 </head>
-<body class="hljs" s>
+<body class="hljs">
   <pre><code id="main"></code><code id="changes"></code></pre>
 
   <script>
@@ -85,6 +85,12 @@
 
         return placeholder;
       }).join('');
+
+      var hl = document.getElementsByClassName('hl')[0];
+      if (hl) {
+        var scroll = hl.scrollIntoViewIfNeeded || hl.scrollIntoView;
+        scroll.call(hl);
+      }
     }
 
     document.onkeydown = function(e) {
