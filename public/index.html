@@ -68,13 +68,13 @@
         return;
       }
 
-      var diff = JsDiff.diffLines(
+      var diff = JsDiff.diffTrimmedLines(
         snapshots[current - 1].content,
         snapshots[current].content
       );
 
       changes.innerHTML = diff.map(function(part) {
-        if (part.removed) {
+        if (part.removed || !part.count) {
           return '';
         }
 
