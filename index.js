@@ -5,10 +5,32 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-var fileName = process.argv[2];
+function printHelpAndExit(exitCode) {
+  console.error([
+    'Usage: ' + __filename + ' [-p] <file-to-watch>',
+    '',
+    'Options:',
+    '  -h, --help    Show this screen',
+    '  -p, --public  Start ngrok proxy to let others connect to this server',
+  ].join('\n'));
+  process.exit(exitCode);
+}
+
+var fileName, allowPublicAccess;
+
+process.argv.slice(2).forEach(function(arg) {
+  if (arg == '-h' || arg == '--help') {
+    printHelpAndExit(0);
+  }
+  if (arg == '-p' || arg == '--public') {
+    allowPublicAccess = true;
+  } else {
+    fileName = arg;
+  }
+});
+
 if (!fileName) {
-  console.error('Usage ' + __filename + ' <file-to-watch>');
-  process.exit(1);
+  printHelpAndExit(1);
 }
 
 function getSnapshot() {
@@ -33,12 +55,14 @@ fs.watch(fileName, function() {
   }
 })
 
-console.log('Serving ' + fileName + ' on http://localhost:3000/');
+console.log('Serving ' + fileName + ' on http://localhost:3030/');
 
-// var ngrok = require('ngrok');
-// ngrok.connect(3000, function (err, url) {
-//   console.log('Public URL:', url);
-// });
+if (allowPublicAccess) {
+  var ngrok = require('ngrok');
+  ngrok.connect(3030, function (err, url) {
+    console.log('Public URL:', url);
+  });
+}
 
 app.use(express.static(path.join(__dirname, 'public')));
-server.listen(3000);
+server.listen(3030);
