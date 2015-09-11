@@ -9,6 +9,10 @@
   "bin": "./index.js",
   "author": "Alex Kotliarskyi <alex.frantic@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frantic/live-coding"
+  },
   "dependencies": {
     "express": "^4.13.1",
     "ngrok": "^0.1.99",
