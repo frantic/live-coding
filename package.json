@@ -1,11 +1,12 @@
 {
-  "name": "live-code-share",
+  "name": "live-coding",
   "version": "1.0.0",
   "description": "Share your live coding session via the browser",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": "./index.js",
   "author": "Alex Kotliarskyi <alex.frantic@gmail.com>",
   "license": "MIT",
   "dependencies": {
