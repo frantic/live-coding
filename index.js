@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// Hello, world!
 var fs = require('fs');
 var path = require('path');
 var express = require('express');
@@ -51,11 +52,11 @@ io.on('connection', function (socket) {
 fs.watch(fileName, function() {
   var last = snapshots[snapshots.length - 1];
   var current = getSnapshot();
-  if (current.content !== last.content) {
+  if (current.content !== last.content && current.length > 0) {
     io.emit('change', current);
     snapshots.push(current);
   }
-})
+});
 
 console.log('Serving ' + fileName + ' on http://localhost:3030/');
 
