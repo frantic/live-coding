@@ -1,6 +1,6 @@
 {
   "name": "live-coding",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Share your live coding session via the browser",
   "main": "index.js",
   "scripts": {
